@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMS — PT Prasad Seeds Indonesia</title>
+<link rel="icon" href="data:,">
 <meta name="description" content="Energy Monitoring System — PT Prasad Seeds Indonesia">
 
 <!-- Fonts -->
@@ -767,7 +768,7 @@ h1, h2, h3, h4, .font-display {
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <img src="assets/logo.png" alt="Logo" class="js-company-logo" onerror="this.onerror=null;this.src=DEFAULT_CONFIG.companyLogo;">
+      <img src="" alt="Logo" class="js-company-logo" onerror="this.onerror=null; if (typeof DEFAULT_CONFIG !== 'undefined') { this.src = DEFAULT_CONFIG.companyLogo; } else { window.__pendingLogoImgs.push(this); }">
       <span class="js-company-name">PT Prasad Seeds Indonesia</span>
     </div>
     <nav class="sidebar-nav">
@@ -1153,10 +1154,14 @@ h1, h2, h3, h4, .font-display {
 <!-- =========================================================
      VENDOR SCRIPTS
      ========================================================= -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"
+  onerror="this.onerror=null;document.write('<script src=\'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\'><\/script>')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"
+  onerror="this.onerror=null;document.write('<script src=\'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js\'><\/script>')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+  onerror="this.onerror=null;document.write('<script src=\'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js\'><\/script>')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+  onerror="this.onerror=null;document.write('<script src=\'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js\'><\/script>')"></script>
 
 <!-- App scripts (urutan penting) -->
 <!-- ==== config.js ==== -->
@@ -1576,6 +1581,18 @@ const EMSApi = (() => {
 const EMSCharts = (() => {
   let powerChart = null;
   let energyChart = null;
+
+  // Jaga-jaga jika Chart.js gagal dimuat dari CDN (mis. diblokir tracking
+  // prevention/ad-blocker) — daripada seluruh app crash, tampilkan pesan
+  // yang jelas dan biarkan fitur lain tetap berfungsi normal.
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js gagal dimuat — grafik dinonaktifkan.');
+    return {
+      renderPowerChart: () => {},
+      renderEnergyChart: () => {},
+      destroyAll: () => {}
+    };
+  }
 
   Chart.defaults.font.family = "'IBM Plex Mono', 'Courier New', monospace";
   Chart.defaults.color = '#9FB4C9';
